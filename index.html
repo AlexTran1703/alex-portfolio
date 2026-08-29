@@ -67,15 +67,146 @@
     }
     .about-inner { display: flex; gap: 2.75rem; align-items: flex-start; }
 
-    .avatar {
-      width: 128px; height: 128px; flex-shrink: 0;
-      border-radius: 50%;
-      border: 3px solid rgba(255,255,255,.3);
-      background: rgba(255,255,255,.1);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2.8rem; color: rgba(255,255,255,.55);
-      font-family: Georgia, serif;
+    .avatar-wrap {
+      width: 150px;
+      flex-shrink: 0;
+      text-align: center;
     }
+    .avatar {
+      width: 170px;
+      height: 210px;
+      overflow: hidden;
+      border-radius: 14px;
+      position: relative;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 100%;
+
+      transform: scale(1.5) translateY(5px);;
+      transform-origin: center top;
+
+      display: block;
+    }
+    .avatar-watermark {
+      position: absolute;
+      left: 0; right: 0; bottom: 10px;
+      padding: .18rem .3rem;
+      background: rgba(15,23,42,.52);
+      color: rgba(255,255,255,.9);
+      font-family: Arial, sans-serif;
+      font-size: .56rem;
+      font-weight: 700;
+      letter-spacing: .35px;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+    .avatar-note {
+      margin-top: .55rem;
+      color: rgba(255,255,255,.58);
+      font: .63rem/1.35 Arial, sans-serif;
+      letter-spacing: .2px;
+    }
+
+    .personal-letter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      margin-top: .35rem;
+      padding: .55rem .85rem;
+      border: 1px solid rgba(255,255,255,.38);
+      border-radius: 7px;
+      background: rgba(255,255,255,.08);
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .25px;
+      cursor: pointer;
+      transition: background .18s, border-color .18s, transform .18s;
+    }
+    .personal-letter-btn:hover {
+      background: rgba(255,255,255,.15);
+      border-color: rgba(255,255,255,.65);
+      transform: translateY(-1px);
+    }
+
+    /* ── Personal letter modal ── */
+    .letter-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      background: rgba(15,23,42,.78);
+      backdrop-filter: blur(6px);
+    }
+    .letter-modal.is-open { display: flex; }
+    .letter-dialog {
+      width: min(920px, 96vw);
+      height: min(88vh, 820px);
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.35);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .letter-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--light);
+    }
+    .letter-eyebrow {
+      color: var(--teal);
+      font: 700 .68rem/1 Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: .35rem;
+    }
+    .letter-title {
+      color: var(--navy);
+      font-size: 1.05rem;
+      line-height: 1.3;
+    }
+    .letter-subtitle {
+      margin-top: .2rem;
+      color: var(--muted);
+      font: .78rem/1.4 Arial, sans-serif;
+    }
+    .letter-close {
+      width: 34px; height: 34px;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: #fff;
+      color: var(--navy);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    .letter-frame {
+      width: 100%;
+      flex: 1;
+      border: 0;
+      background: #f1f5f9;
+    }
+    .letter-fallback {
+      padding: .7rem 1rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font: .75rem/1.4 Arial, sans-serif;
+      text-align: center;
+    }
+    .letter-fallback a { color: var(--teal); }
 
     .about-text h1 { font-size: 2.1rem; margin-bottom: .2rem; }
     .about-text p { color: rgba(255,255,255,.88); font-size: .95rem; margin-bottom: .85rem; }
@@ -252,7 +383,13 @@
 <section id="about">
   <div class="container">
     <div class="about-inner">
-      <div class="avatar">K</div>
+      <div class="avatar-wrap">
+        <div class="avatar">
+          <img src="cover/avatar.jpg" alt="Portrait of Khanh Duy Tran" draggable="false">
+          <span class="avatar-watermark">© Khanh Duy Tran · Personal Profile</span>
+        </div>
+        <div class="avatar-note">Portrait © Khanh Duy Tran · Please do not reuse.</div>
+      </div>
       <div class="about-text">
         <h1>Khanh Duy Tran</h1>
         <p>
@@ -272,6 +409,9 @@
           AWS and MongoDB Atlas. I aim to develop not only theoretical research proposals,
           but also practical technologies that can support real-world healthcare applications.
         </p>
+        <button class="personal-letter-btn" type="button" id="open-letter">
+          ♡ A Personal Note — Engagement Day
+        </button>
       </div>
     </div>
   </div>
@@ -360,6 +500,28 @@
     </div>
   </div>
 </section>
+
+<!-- ════════════ PERSONAL LETTER MODAL ════════════ -->
+<div class="letter-modal" id="letter-modal" role="dialog" aria-modal="true" aria-labelledby="letter-title" aria-hidden="true">
+  <div class="letter-dialog">
+    <div class="letter-header">
+      <div>
+        <div class="letter-eyebrow">Personal Archive · Engagement Day</div>
+        <div class="letter-title" id="letter-title">A Letter to My Wife</div>
+      </div>
+      <button class="letter-close" type="button" id="close-letter" aria-label="Close letter">×</button>
+    </div>
+    <iframe
+      class="letter-frame"
+      src="cover/engagement-letter.pdf"
+      title="Engagement Day letter to my wife">
+    </iframe>
+    <div class="letter-fallback">
+      If your browser cannot display the PDF,
+      <a href="cover/engagement-letter.pdf" target="_blank" rel="noopener">open the letter in a new tab</a>.
+    </div>
+  </div>
+</div>
 
 <footer>
   © 2025 Khanh Duy Tran &nbsp;·&nbsp;
@@ -695,6 +857,34 @@
     }
   }
 
+
+  /* ── Personal letter modal ── */
+  const letterModal = document.getElementById('letter-modal');
+  const openLetterBtn = document.getElementById('open-letter');
+  const closeLetterBtn = document.getElementById('close-letter');
+
+  function openLetter() {
+    letterModal.classList.add('is-open');
+    letterModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    closeLetterBtn.focus();
+  }
+
+  function closeLetter() {
+    letterModal.classList.remove('is-open');
+    letterModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    openLetterBtn.focus();
+  }
+
+  openLetterBtn.addEventListener('click', openLetter);
+  closeLetterBtn.addEventListener('click', closeLetter);
+  letterModal.addEventListener('click', (event) => {
+    if (event.target === letterModal) closeLetter();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && letterModal.classList.contains('is-open')) closeLetter();
+  });
 
   /* ── Init ── */
   loadEducation();
